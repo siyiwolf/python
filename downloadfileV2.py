@@ -86,13 +86,27 @@ class downloadfile():
                     str_form = r'.+' + str(self.form_str) + '$'
                     #print(str_form)
                     pad = re.compile(str_form)
+
+                    sub_dir = r'.+/$'
+                    pad_dir = re.compile(sub_dir)
                     if(pad.match(href_url)):
                         #print(href_url)
                         if href_url not in self.form_file_list:
                             self.form_file_list.append(href_url)
                     elif (re.match(r'http', href_url)):
                         if href_url not in self.sub_url_list:
-                            self.sub_url_list.append(href_url)        
+                            self.sub_url_list.append(href_url)
+                    elif (pad_dir.match(href_url)):
+                        print(href_url.split('/')[-2])
+                        print(self.url.split('/')[-3])
+                        if(re.match(href_url.split('/')[-2],self.url.split('/')[-3])):            #判断返回到原始的位置
+                            print('back up')
+                            continue
+                        
+                        temp_url = self.url + href_url
+                        if temp_url not in self.sub_url_list:
+                            print(temp_url)
+                            self.sub_url_list.append(temp_url)
 
     #文件下载
     def get_dir_name(self):
@@ -193,5 +207,4 @@ if __name__=='__main__':
     it_downloadfile = downloadfile(d_ulr, form_str, 0, level_max)
     it_downloadfile.process_load_file()
     print(it_downloadfile)
-
     
