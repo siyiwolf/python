@@ -48,6 +48,8 @@ class downloadfile():
         self.file_num = 0;
         self.localData = staticLoadNum(url, level_num)    #打包数据
         downloadfile.ulr_set.add(url);
+
+        #规划下载文件存储目录层级
         os.chdir(father_dir)
         load_dir = str(level_num) + '_load_' + form_str[1:]
         
@@ -217,4 +219,5 @@ if __name__=='__main__':
     print(os.getcwd())
     it_downloadfile.process_load_file()
     print(it_downloadfile)
+    
     

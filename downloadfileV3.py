@@ -10,14 +10,17 @@ import os
 
 #该类主要用于数据统计以及启动恢复等
 class staticLoadNum():
-    def __init__(self, url, level_num):
-        self.url = url
+    def __init__(self, level_num):
+        #self.url = url
         self.level_num = level_num
         self.list = list();
         self.file_num = 0;
         self.sum_num = 0;
         self.file_failed_num = 0;
         self.sum_failed_num = 0;
+        
+    def get_level_num(self):
+        return self.level_num
 
     def set_file_num(self, file_num):
         self.file_num = file_num
@@ -29,8 +32,7 @@ class staticLoadNum():
         self.sum_num += sub_data.sum_num
 
     def __str__(self):
-        static_info = 'The URL is:' + self.url + '\n' +\
-                      'Level_num:' + str(self.level_num) + '\n' +\
+        static_info = 'Level_num:' + str(self.level_num) + '\n' +\
                       'Num of Sons:' + str(len(self.list)) + '\n' +\
                       'File Num:' + str(self.file_num) + '\n' +\
                       'Sum File Num:' + str(self.sum_num)
@@ -39,21 +41,26 @@ class staticLoadNum():
 #下载类
 class downloadfile():
     ulr_set = set();
-    def __init__(self, url, form_str = '.pdf', level_num = 0, max_level = 0):
+    def __init__(self, url, max_level, form_str, father_dir, level_num = 0):
         self.url = url
         self.max_level = max_level
-        self.level_num = level_num
+        #self.level_num =  level_num
         self.form_str = form_str
         self.form_file_list = list()
         self.sub_url_list = list()
         self.file_num = 0;
-        
-        self.localData = staticLoadNum(url, level_num)    #打包数据
-
+        self.localData = staticLoadNum(level_num)    #打包数据
         downloadfile.ulr_set.add(url);
 
-    def get_local_data(self):
-        return self.localData
+        #规划下载文件存储目录层级
+        os.chdir(father_dir)
+        load_dir = str(level_num) + '_load_' + form_str[1:]
+        
+        if not os.path.exists(load_dir):
+            os.mkdir(load_dir)
+        os.chdir(os.path.join(os.getcwd(), load_dir))
+        self.dir_name = os.getcwd()
+
 
     #网络链接基础方法
     def connect_to_url(self):
@@ -87,13 +94,27 @@ class downloadfile():
                     str_form = r'.+' + str(self.form_str) + '$'
                     #print(str_form)
                     pad = re.compile(str_form)
+
+                    sub_dir = r'.+/$'
+                    pad_dir = re.compile(sub_dir)
                     if(pad.match(href_url)):
                         #print(href_url)
                         if href_url not in self.form_file_list:
                             self.form_file_list.append(href_url)
                     elif (re.match(r'http', href_url)):
                         if href_url not in self.sub_url_list:
-                            self.sub_url_list.append(href_url)        
+                            self.sub_url_list.append(href_url)
+                    elif (pad_dir.match(href_url)):
+                        print(href_url.split('/')[-2])
+                        print(self.url.split('/')[-3])
+                        if(re.match(href_url.split('/')[-2],self.url.split('/')[-3])):            #判断返回到原始的位置
+                            print('back up')
+                            continue
+                        
+                        temp_url = self.url + href_url
+                        if temp_url not in self.sub_url_list:
+                            print(temp_url)
+                            self.sub_url_list.append(temp_url)     
 
     #文件下载
     def get_dir_name(self):
@@ -104,7 +125,7 @@ class downloadfile():
         else:
             dir_list = self.url.split('/')[3:]
 
-        dir_name = str(self.level_num)
+        dir_name = str(self.localData.get_level_num())
         for dir_str in dir_list:
             if (len(dir_name) + len(dir_str) > 64):
                 break;
@@ -144,12 +165,14 @@ class downloadfile():
         self.form_file_list.sort()
         form_num = len(self.form_file_list)
         self.localData.set_file_num(form_num)
-        print('The num of File Need to load:', form_num)
+        print('The total Form num is', form_num)
         if (form_num != 0):
             dir_name = self.get_dir_name()
-            if not os.path.exists(dir_name) :  
+            if not os.path.exists(dir_name):
                 os.mkdir(dir_name)
-            os.chdir(os.path.join(os.getcwd(), dir_name))  
+
+            cur_dir = os.getcwd()
+            os.chdir(os.path.join(cur_dir, dir_name))  
             i = 0
             for url in self.form_file_list:
                 if (re.match(r'http', url)):
@@ -164,6 +187,8 @@ class downloadfile():
                 i = i + 1
                 rate = format(i/form_num, '.0%')
                 print('have load num is:', i, 'and rate:', rate)
+            
+            os.chdir(cur_dir)
 
 ##    def assgin_load_process(self):
 ##        if self.level_num > self.max_level:
@@ -178,6 +203,7 @@ class downloadfile():
 ##        p.join()
 ##        print('End load:', self.level_num)
 ##        self.process_load_file()
+            
 ##    def long_time_task(self, name):
 ##        print('Run task %s (%s)...' % (name, os.getpid()))
 ##        start = time.time()
@@ -186,22 +212,27 @@ class downloadfile():
 ##        print('Task %s runs %0.2f seconds.' % (name, (end - start)))
     
     def sub_work(self, sub_url):
-        sub_level = self.level_num + 1
-        print('Run task %s (%s)...' % (sub_level, os.getpid()))
-        sub_load_class = downloadfile(sub_url, self.form_str, sub_level, self.max_level)
+        sub_level = self.localData.get_level_num() + 1
+        print('Run task %s (%s) for %s ...' %(sub_level, os.getpid(), sub_url))
+        #start = time.time()
+        sub_load_class = downloadfile(sub_url, self.max_level, self.form_str, self.dir_name, sub_level)
         sub_load_class.assgin_load_pool()
+        #end = time.time()
+        #print('Task %s runs %0.2f seconds.' % (name, (end - start)))
+        print('Task %s (%s) for %s finshed!...' %(sub_level, os.getpid(), sub_url))
 
     def assgin_load_pool(self):
-        if self.level_num > self.max_level:
+        if self.localData.get_level_num() > self.max_level:
             return
         response = self.connect_to_url()
         self.get_a_href(response)
         self.loadFile()
         pool_size = len(self.sub_url_list);
         print(pool_size)
+
         p = Pool(pool_size)
         for sub_url in self.sub_url_list:
-            print(sub_url)
+            #print(sub_url)
             p.apply_async(self.sub_work, args=(sub_url,))
 
 ##        p = Pool(pool_size)
@@ -226,7 +257,6 @@ class downloadfile():
     def __str__(self):
         info_str = 'LoadFile Infomation:\n' +\
                                'url:'+ self.url + '\n' +\
-                               'level_num:' + str(self.level_num) + '\n' +\
                                'have load file:' + str(len(self.form_file_list)) + '\n' +\
                                'local data:' + str(self.localData)
         return info_str
@@ -235,6 +265,7 @@ if __name__=='__main__':
     d_ulr = input('Please input the pdf webSite:')
     level_max = int(input('Please input the max level:'))
     form_str = input('Please input the file form:')
-    it_downloadfile = downloadfile(d_ulr, form_str, 0, level_max)
+    it_downloadfile = downloadfile(d_ulr, level_max, form_str, os.getcwd())
     it_downloadfile.assgin_load_pool()
     print(it_downloadfile)
+    input()
