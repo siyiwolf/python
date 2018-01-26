@@ -38,7 +38,7 @@ class staticLoadNum():
 #下载类
 class downloadfile():
     ulr_set = set();
-    def __init__(self, url, form_str = '.pdf', level_num = 0, max_level = 0):
+    def __init__(self, url, max_level, form_str, father_dir, level_num = 0):
         self.url = url
         self.max_level = max_level
         self.level_num =  level_num
@@ -46,10 +46,15 @@ class downloadfile():
         self.form_file_list = list()
         self.sub_url_list = list()
         self.file_num = 0;
-        
         self.localData = staticLoadNum(url, level_num)    #打包数据
-
         downloadfile.ulr_set.add(url);
+        os.chdir(father_dir)
+        load_dir = str(level_num) + '_load_' + form_str[1:]
+        
+        if not os.path.exists(load_dir):
+            os.mkdir(load_dir)
+        os.chdir(os.path.join(os.getcwd(), load_dir))
+        self.dir_name = os.getcwd()
 
     def get_local_data(self):
         return self.localData
@@ -161,9 +166,11 @@ class downloadfile():
         print('The total Form num is', form_num)
         if (form_num != 0):
             dir_name = self.get_dir_name()
-            if not os.path.exists(dir_name) :  
+            if not os.path.exists(dir_name):
                 os.mkdir(dir_name)
-            os.chdir(os.path.join(os.getcwd(), dir_name))  
+
+            cur_dir = os.getcwd()
+            os.chdir(os.path.join(cur_dir, dir_name))  
             i = 0
             for url in self.form_file_list:
                 if (re.match(r'http', url)):
@@ -178,6 +185,8 @@ class downloadfile():
                 i = i + 1
                 rate = format(i/form_num, '.0%')
                 print('have load num is:', i, 'and rate:', rate)
+            
+            os.chdir(cur_dir)
 
     #解决性能问题---进程调度
     def process_load_file(self):
@@ -187,7 +196,7 @@ class downloadfile():
         if self.level_num > self.max_level:
             return
         for sub_url in self.sub_url_list:
-            sub_load_class = downloadfile(sub_url, self.form_str, self.level_num+1, self.max_level)
+            sub_load_class = downloadfile(sub_url, self.max_level, self.form_str, self.dir_name, self.level_num+1)
             sub_load_class.process_load_file()
             self.localData.data_add(sub_load_class.get_local_data())
             print(sub_load_class);
@@ -204,7 +213,8 @@ if __name__=='__main__':
     d_ulr = input('Please input the pdf webSite:')
     level_max = int(input('Please input the max level:'))
     form_str = input('Please input the file form:')
-    it_downloadfile = downloadfile(d_ulr, form_str, 0, level_max)
+    it_downloadfile = downloadfile(d_ulr, level_max, form_str, os.getcwd())
+    print(os.getcwd())
     it_downloadfile.process_load_file()
     print(it_downloadfile)
     
