@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
+from mulitprocess import Pool
 import urllib.request
 import requests
 import re  
@@ -91,7 +92,7 @@ class downloadfile():
                 pat = re.compile(hreg)                
                 if (pat.search(str(a_href))):        #匹配超链接      
                     href_url = a_href['href']
-                    print(href_url)
+                    #print(href_url)
                     if href_url in downloadfile.ulr_set:
                         continue
 
@@ -107,8 +108,8 @@ class downloadfile():
                             str1 = a_href['onclick']
                             m = re.findall("'([^']+)'", str1)
                             href_url = m[0]
-                            print(a_href)
-                            print(href_url)
+                            #print(a_href)
+                            #print(href_url)
                         else:
                             continue
                     
@@ -131,7 +132,7 @@ class downloadfile():
                         if href_url not in self.sub_url_list:
                             self.sub_url_list.append(href_url)   
                     elif (pad_dir.match(href_url)):                                               #确定是否属于返回上一目录
-                        print('sub_dir')
+                        #print('sub_dir')
 ##                        if(re.match(href_url.split('/')[-2],self.url.split('/')[-3])):            #判断返回到原始的位置
 ##                            print('continue')
 ##                            print(href_url.split('/'))
@@ -143,7 +144,7 @@ class downloadfile():
 
                         #特殊化处理先
                         temp_url = 'http://www.bzmfxz.com' + href_url
-                        print(temp_url)
+                        #print(temp_url)
                         if temp_url not in self.sub_url_list:
                             self.sub_url_list.append(temp_url)
                     
@@ -282,13 +283,28 @@ class downloadfile():
                                'local data:' + str(self.localData)
         return info_str
 
+def load_rar_function(downfile_list):
+    print(downfile_list)
+    for it_downloadfile in downfile_list
+        it_downloadfile.process_load_file()
+
+
+    
+
 if __name__=='__main__':
     d_ulr = input('Please input the pdf webSite:')
     level_max = int(input('Please input the max level:'))
     form_str = input('Please input the file form:')
-    it_downloadfile = downloadfile(d_ulr, level_max, form_str, os.getcwd())
-    print(os.getcwd())
-    it_downloadfile.process_load_file()
+    list_loadfile = list()
+    for i in range(49)
+        d_ulr = d_ulr + 'List_' + str(i + 1) + '.html'
+        it_downloadfile = downloadfile(d_ulr, level_max, form_str, os.getcwd())
+        list_loadfile.append(it_downloadfile)
+
+    p = Pool(4)
+    for i in range(4):
+        p.apply_async(load_rar_function, args=(list_loadfile[12*i:12*(i+1)],))
+
     print(it_downloadfile)
     
     
