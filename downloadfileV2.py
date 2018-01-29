@@ -82,18 +82,15 @@ class downloadfile():
             soup = BeautifulSoup(response.content, "html.parser",from_encoding="iso-8859-1")
             a_list = soup.find_all('a');
             for a_href in a_list:
-                #print(a_href)
                 hreg = r'(href)'
                 pat = re.compile(hreg)
                 if (pat.search(str(a_href))):         
                     href_url = a_href['href']
                     if href_url in downloadfile.ulr_set:
                         continue
-
                     str_form = r'.+' + str(self.form_str) + '$'
                     #print(str_form)
                     pad = re.compile(str_form)
-
                     sub_dir = r'.+/$'
                     pad_dir = re.compile(sub_dir)
                     if(pad.match(href_url)):
@@ -104,26 +101,37 @@ class downloadfile():
                         if href_url not in self.sub_url_list:
                             self.sub_url_list.append(href_url)
                     elif (pad_dir.match(href_url)):
-                        print(href_url.split('/')[-2])
-                        print(self.url.split('/')[-3])
                         if(re.match(href_url.split('/')[-2],self.url.split('/')[-3])):            #判断返回到原始的位置
-                            print('back up')
                             continue
                         
+                        rHtml_str = remove_html()
                         temp_url = self.url + href_url
+                        print(temp_url)
                         if temp_url not in self.sub_url_list:
-                            print(temp_url)
                             self.sub_url_list.append(temp_url)
+
+    def remove_html(self):
+        html_form = r'.+\.html$'
+        pad = re.compile(html_form)
+        end_index = 0
+        if(pad.match(self.url.split('/')[-1])):
+            end_index = end_index = len(self.url.split('/')[-1])
+        return self.url[:end_index]
+
+    def filter_condition(self, a_href)
+        
+    
 
     #文件下载
     def get_dir_name(self):
-        html_form = r'.+\.html$'
-        pad = re.compile(html_form)
-        if(pad.match(self.url.split('/')[-1])):
-            dir_list = self.url.split('/')[3:-1]
-        else:
-            dir_list = self.url.split('/')[3:]
-
+##        html_form = r'.+\.html$'
+##        pad = re.compile(html_form)
+##        if(pad.match(self.url.split('/')[-1])):
+##            dir_list = self.url.split('/')[3:-1]
+##        else:
+##            dir_list = self.url.split('/')[3:]
+        dirl = self.remove_html()
+        dir_list = self.url.split('/')[3:]
         dir_name = str(self.level_num)
         for dir_str in dir_list:
             if (len(dir_name) + len(dir_str) > 64):

@@ -268,4 +268,3 @@ if __name__=='__main__':
     it_downloadfile = downloadfile(d_ulr, level_max, form_str, os.getcwd())
     it_downloadfile.assgin_load_pool()
     print(it_downloadfile)
-    input()
