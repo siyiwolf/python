@@ -7,7 +7,7 @@ import requests
 import re  
 import os
 
-#该类主要用于数据统计以及启动恢复等
+#该类主要用于数据统计以及启动恢复�?
 class staticLoadNum():
     def __init__(self, url, level_num):
         self.url = url
@@ -35,7 +35,7 @@ class staticLoadNum():
                       'Sum File Num:' + str(self.sum_num)
         return static_info
 
-#下载类
+#下载�?
 class downloadfile():
     ulr_set = set();
     def __init__(self, url, max_level, form_str, father_dir, level_num = 0):
@@ -97,7 +97,7 @@ class downloadfile():
                 if href_url in downloadfile.ulr_set:
                     continue
 
-                #匹配href是否是#
+                #匹配href是否�?
                 fig_str = r'#$'
                 pad_fig = re.compile(fig_str)
                 if(pad_fig.match(href_url)):
@@ -125,7 +125,7 @@ class downloadfile():
                     #print(debug_href_url)
                     if href_url not in self.form_file_list:
                         self.form_file_list.append(href_url)
-                elif (re.match(r'http', href_url)):                                           #匹配子链接
+                elif (re.match(r'http', href_url)):                                           #匹配子链�?
                     #print('debug http')
                     if href_url not in self.sub_url_list:
                         self.sub_url_list.append(href_url)   
@@ -260,7 +260,7 @@ class downloadfile():
         file_name = url.split('/')[-1]
         #print(file_name)
         try:  
-            u = urllib.request.urlopen(url)  
+            u = urllib.request.urlopen(url, timeout = 180)  
         except urllib.error.HTTPError:  
             print(url, "url file not found")  
             return
@@ -268,9 +268,9 @@ class downloadfile():
             print('File Socket failed!')
             return
 
-        #如果文件存在，则不进行再次写入
+        #如果文件存在，则不进行再次写�?
         if os.path.exists(file_name):
-            print(file_name + 'existed, we passed')
+            print(file_name + ' existed, we passed')
             return
 
         block_sz = 8192        

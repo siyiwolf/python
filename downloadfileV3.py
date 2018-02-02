@@ -8,7 +8,7 @@ import requests
 import re  
 import os
 
-#该类主要用于数据统计以及启动恢复等
+#该类主要用于数据统计以及启动恢复�?
 class staticLoadNum():
     def __init__(self, level_num):
         #self.url = url
@@ -38,7 +38,7 @@ class staticLoadNum():
                       'Sum File Num:' + str(self.sum_num)
         return static_info
 
-#下载类
+#下载�?
 class downloadfile():
     ulr_set = set();
     def __init__(self, url, max_level, form_str, father_dir, level_num = 0):
@@ -146,7 +146,7 @@ class downloadfile():
             print('File Socket failed!')
             return
 
-        #如果文件存在，则不进行再次写入
+        #如果文件存在，则不进行再次写�?
         if os.path.exists(file_name):
             print(file_name + 'existed, we passed')
             return
@@ -162,7 +162,6 @@ class downloadfile():
         print ("Sucessful to download" + " " + file_name)
         
     def loadFile(self):
-        self.form_file_list.sort()
         form_num = len(self.form_file_list)
         self.localData.set_file_num(form_num)
         print('The total Form num is', form_num)
