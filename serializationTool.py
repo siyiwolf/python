@@ -19,7 +19,7 @@ def serialize_instance(obj):
 def unserialize_object(d):
     clsname = d.pop('__classname__', None)
     if  clsname:
-        cls = serializationTool.classes[clsname]
+        cls = classes[clsname]
         obj = cls.__new__(cls) # Make instance without calling __init__
         for key, value in d.items():
             setattr(obj, key, value)
@@ -34,7 +34,7 @@ def serialize_data(dir_name, obj):
 
     file_name = dir_name + '\\file.json'
     with open(file_name, 'w', encoding='utf-8') as f:
-        json.dump(obj, f)
+        json.dump(obj, f, default=serialize_instance)
 
 
 #反序列化
@@ -43,8 +43,8 @@ def deserialize_data(dir_name):
     #判断是否存在文件
     if  os.path.exists(file_name):
         #进行反序列化
-        with open('file_name', encoding='utf-8') as f:
-            obj = json.load(f)
+        with open(file_name, encoding='utf-8') as f:
+            obj = json.load(f, object_hook=unserialize_object)
             return obj
     else:
         return None

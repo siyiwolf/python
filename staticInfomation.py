@@ -3,22 +3,11 @@ import re
 import os
 
 class staticInfomation():
-    def __init__(self, current_dir):
+    def __init__(self):
         self.son_list = list()
         self.file_num = 0
         self.failed_num = 0
-        self.current_dir = current_dir
 
-    def get_current_dir(self):
-        return self.current_dir
-
-    def get_file_dir(self, file_type):
-        file_path =self.current_dir + '\\' + file_type[1:] + '_file'
-        return file_path
-
-    def get_sub_dir(self, level, index):
-        sub_path = self.current_dir + '\\' + str(level) + '_' + str(index)
-        return sub_path
 
     def set_file_num(self, file_num):
         self.file_num = file_num
@@ -30,7 +19,6 @@ class staticInfomation():
         sumNum = self.file_num;
         for son_static in self.son_list:
             sumNum += son_static.static_sum_num()
-
         return sumNum
 
     def static_failed_sum(self):
@@ -39,9 +27,6 @@ class staticInfomation():
             sumFailedNum += son_static.static_failed_sum()
 
         return sumFailedNum
-
-    def updata_failed_num(self):
-        self.failed_num += 1;
         
     def set_failed_num(self, failed_num):
         self.failed_num = failed_num;

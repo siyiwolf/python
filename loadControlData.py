@@ -12,12 +12,19 @@ import parseHtmlElement
 
 class loadControlData():
     url_set = set()
-    def __init__(self, url, current_dir, level = 0):
+    max_level = 0
+    file_type = ''
+    def __init__(self, url, level_max, current_dir, type_file = '.pdf', level = 0):
         self.url = url
         self.current_dir = current_dir
         self.level = level
         self.file_list = list()
         self.subUlr_list = list()
+        loadControlData.max_level = level_max
+        loadControlData.file_type = type_file
+
+    def get_level_num(self):
+        return self.level
 
     def get_load_url(self):
         return self.url
@@ -25,14 +32,19 @@ class loadControlData():
     def get_sub_url_num(self):
         return (len(self.subUlr_list))
 
-    def get_sub_url_base_index(self, index):
+    def get_sub_url_list(self):
+        return self.subUlr_list
+
+    def get_sub_dir_base_index(self, index):
         sub_path = self.current_dir + '\\' + str(self.level) + '_' + str(index)
         return sub_path
         
     def is_file_ulr(self, href_value):
-        type_str = r'.+' + loadFrame.loadFrame.file_type + '$'
+        type_str = r'.+' + loadControlData.file_type + '$'
         type_pattern = re.compile(type_str)
+        #print(href_value)
         if type_pattern.match(href_value):
+            #print('Match pdf success!')
             return True
 
         return False
@@ -68,16 +80,19 @@ class loadControlData():
       
 
     def get_file(self, file_ulr):
+        #先查看文件是否存在，如果文件存在，则直接返回，不用试着进行http请求，提高效率
         file_name = file_ulr.split('/')[-1]
+        file_name = re.sub('[\/:*?"<>|]','-',file_name)     #文件名不支持的字符
+        if os.path.exists(file_name):
+            print(file_name + ' existed, we passed')
+            return True
+
+        file_ulr = file_ulr.replace(' ', '%20')             #空格转换为%20，满足链接条件
         try:  
             u = urllib.request.urlopen(file_ulr, timeout = 180)  
         except:
             print('Get URL file failed!')
             return False
-
-        if os.path.exists(file_name):
-            print(file_name + ' existed, we passed')
-            return True
 
         block_sz = 8192        
         with open(file_name, 'wb') as f:  
@@ -91,7 +106,7 @@ class loadControlData():
         return True
 
     def get_file_dir(self):
-        file_path =self.current_dir + '\\' + loadFrame.loadFrame.file_type[1:] + '_file'
+        file_path =self.current_dir + '\\' + loadControlData.file_type[1:] + '_file'
         return file_path
 
     def load_all_file(self):
@@ -111,7 +126,7 @@ class loadControlData():
         return failed_num
 
     def is_task_finished(self):
-        return (self.level == loadFrame.loadFrame.max_level)
+        return (self.level == loadControlData.max_level)
 
     def __str__(self):
         info_str = 'LoadFile Infomation:\n' +\
