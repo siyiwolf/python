@@ -20,7 +20,7 @@ class loadFrame():
     #闁剧偓甯撮崚鐗堟箛閸斺€虫珤
     def conect_to_server(self):
         url = self.local_data.get_load_url()
-        
+
         try:
             response = requests.get(url, stream=True)
             response.raise_for_status()

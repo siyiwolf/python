@@ -9,7 +9,7 @@ def filter_div_condition(level, div_str):
     if  div_str == None:
         return False
 
-    if  level == 0:
+    if  level == -1:
         try:
             div_class = div_str['class']
         except:
@@ -28,7 +28,7 @@ def filter_a_condition(level, a_href_str):
     if  a_href_str == None:
         return False
 
-    if  level == 1:
+    if  level == -1:
         load_str = r'Download Publication'
         pad_load = re.compile(load_str)
         if (pad_load.match(a_href_str)):

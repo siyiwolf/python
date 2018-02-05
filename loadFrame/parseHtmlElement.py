@@ -26,6 +26,7 @@ def parse_a_label(a_href, root_url):
 
     if (re.match(r'/', href_value)):
         list_href = root_url.split('/')[0:3];
+        #print(list_href)
         href_ulr = ''
         for a_href in list_href:
             if (a_href == ''):

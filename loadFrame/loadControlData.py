@@ -54,7 +54,9 @@ class loadControlData():
         pad = re.compile(html_form)
         end_index = 0
         if  pad.match(self.url.split('/')[-1]):
-            end_index = end_index = len(self.url.split('/')[-1])
+            end_index = len(self.url) - len(self.url.split('/')[-1])
+
+        print(self.url[:end_index])
         return self.url[:end_index]
 
     def parse_file_url(self, soup):
@@ -63,6 +65,7 @@ class loadControlData():
 
         a_list = filterCondition.get_a_list(self.level, soup)
         root_ulr = self.remove_html()
+        #print(root_ulr)
         for a_href in a_list:
             href_value = parseHtmlElement.parse_a_label(a_href, root_ulr)
             if  href_value == None:
@@ -88,6 +91,7 @@ class loadControlData():
             return True
 
         file_ulr = file_ulr.replace(' ', '%20')             #空格转换为%20，满足链接条件
+        #print(file_ulr)
         try:  
             u = urllib.request.urlopen(file_ulr, timeout = 180)  
         except:
@@ -113,7 +117,7 @@ class loadControlData():
         failed_num = 0
         if  len(self.file_list) == 0:
             return failed_num
-      
+        print(self.file_list)
         file_dir = self.get_file_dir()
         if  not os.path.exists(file_dir):
             os.makedirs(file_dir)
