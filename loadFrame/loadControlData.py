@@ -59,7 +59,7 @@ class loadControlData():
 
     def parse_file_url(self, soup):
         if  soup == None:
-            return
+            return 0
 
         a_list = filterCondition.get_a_list(self.level, soup)
         root_ulr = self.remove_html()
@@ -77,7 +77,7 @@ class loadControlData():
             else:
                 if  href_value not in self.subUlr_list:
                     self.subUlr_list.append(href_value)
-      
+        return len(self.file_list)
 
     def get_file(self, file_ulr):
         #先查看文件是否存在，如果文件存在，则直接返回，不用试着进行http请求，提高效率
@@ -130,8 +130,8 @@ class loadControlData():
 
     def __str__(self):
         info_str = 'LoadFile Infomation:\n' +\
-                    'url:'+ self.url + '\n' +\
-                    'current_dir:'+ self.current_dir + '\n' +\
-                    'level:' + str(self.level)
+                    '        url:'+ self.url + '\n' +\
+                    '        current_dir:'+ self.current_dir + '\n' +\
+                    '        level:' + str(self.level)
         return info_str
 

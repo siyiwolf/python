@@ -23,7 +23,7 @@ def unserialize_object(d):
         obj = cls.__new__(cls) # Make instance without calling __init__
         for key, value in d.items():
             setattr(obj, key, value)
-            return obj
+        return obj
     else:
         return d
 

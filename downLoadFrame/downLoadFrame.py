@@ -80,6 +80,7 @@ class downLoadFrame():
     def get_file(self, file_ulr):
         #print(file_ulr)
         file_name = format(file_ulr.split('/')[-1])
+        file_name = re.sub('[\/:*?"<>|]','-',file_name)     #文件名不支持的字符
         file_ulr = file_ulr.replace(' ', '%20')
         print(file_ulr)
         try:  
@@ -107,29 +108,6 @@ class downLoadFrame():
                     break
         print ("Sucessful to download " + file_name)
         
-##        response = self.conect_to_server()
-##        if  response == None:
-##            self.static_data.updata_failed_num();
-##            return
-##
-##        if  response.status_code == 200:
-##            file_name = file_ulr.split('/')[-1]
-##
-##            if  os.path.exists(file_name):
-##                print(file_name + ' existed, we passed')
-##                return
-##            
-##            with open(file_name, 'wb') as f:
-##                #for chunk in response.iter_content(chunk_size = 1024*1000):
-##                #    if  chunk:
-##                f.write(response.content)
-##                        #f.flush()
-##            #f.close()
-##            print ("Sucessful to download " + file_name)
-##        else:
-##            self.static_data.updata_failed_num();
-##            print('HTTP Failed! Status Code is:' + str(response.status_code))
-
     def load_file(self):
         if  len(self.file_list) == 0:
             return
@@ -170,10 +148,18 @@ class downLoadFrame():
         return info_str
     
 if __name__=='__main__':
-    d_ulr = input('Please input the webSite:')
-    level_max = int(input('Please input the max level:'))
-    file_type = input('Please input the file type:')
-    current_dir = os.getcwd() + '\\0_' + file_type[1:] + '_file'
-    it_downloadfile = downLoadFrame(d_ulr, level_max, current_dir, file_type)
-    it_downloadfile.process_work_flow()
-    print(it_downloadfile)
+   d_ulr = input('Please input the webSite:')
+   level_max = int(input('Please input the max level:'))
+   file_type = input('Please input the file type:')
+   current_temp = os.getcwd() + '\\0_' + file_type[1:] + '_file_'
+   d_temp = d_ulr
+   for i in range(1):
+       current_dir = current_temp + str(i+16)
+       print(current_dir)
+       d_ulr = d_temp + str(i+16)
+       print(d_ulr)
+       it_downloadfile = downLoadFrame(d_ulr, level_max, current_dir, file_type)
+       it_downloadfile.process_work_flow()
+       print(it_downloadfile)
+       
+   input('Please enter to End!')
