@@ -15,7 +15,7 @@ def parse_a_label(a_href, root_url):
         try:
             str1 = a_href['onclick']
         except:
-             print('a label have not a vaule of ATTR onclick')
+             #print('a label have not a vaule of ATTR onclick')
              return
           
         m = re.findall("'([^']+)'", str1)

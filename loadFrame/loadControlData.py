@@ -7,7 +7,7 @@ import re
 import os
 
 import loadFrame
-import filterCondition
+import filterInterface
 import parseHtmlElement
 
 class loadControlData():
@@ -63,9 +63,10 @@ class loadControlData():
         if  soup == None:
             return 0
 
-        a_list = filterCondition.get_a_list(self.level, soup)
+        a_list = filterInterface.get_a_list(self.level, soup)
         root_ulr = self.remove_html()
         #print(root_ulr)
+        #print(a_list)
         for a_href in a_list:
             href_value = parseHtmlElement.parse_a_label(a_href, root_ulr)
             if  href_value == None:
