@@ -7,10 +7,10 @@ def get_a_list(level, soup):
         return a_list
 
     #case0
-    #return get_a_list_by_interface(filterInterface(level, soup))
+    return get_a_list_by_interface(filterInterface(level, soup))
 
     #case1
-    return get_a_list_by_interface(filterDIV(level, soup))
+    #return get_a_list_by_interface(filterDIV(level, soup))
     
 
 def get_a_list_by_interface(filter_interface):

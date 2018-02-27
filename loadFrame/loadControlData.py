@@ -52,7 +52,7 @@ class loadControlData():
     def remove_html(self):
         html_form = r'.+\.htm'
         pad = re.compile(html_form)
-        end_index = 0
+        end_index = len(self.url)
         if  pad.match(self.url.split('/')[-1]):
             end_index = len(self.url) - len(self.url.split('/')[-1])
 

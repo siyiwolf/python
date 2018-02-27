@@ -36,12 +36,14 @@ def parse_a_label(a_href, root_url):
 
         href_ulr = href_ulr + href_value
         return href_ulr
-        
+
+    #print(root_url)
     if (re.match(r'\.', href_value)):
         href_ulr = root_url + href_value[1:]
     else:
         href_ulr = root_url + href_value
-
+        
+    #print(href_ulr)
     return href_ulr
             
             
